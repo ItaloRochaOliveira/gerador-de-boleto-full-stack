@@ -9,13 +9,13 @@ export default class EditUserController {
 
     async handle(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { userId } = req.user!;
+            const userId = req.user!.id;
             const updates = EditUserSchema.parse(req.body);
 
             const usersRepository = new TypeORMUsersRepository();
             const hashManager = new HashManager();
             const editService = new EditUserService(usersRepository, hashManager);
-            const result = await editService.execute(userId, updates);
+            const result = await editService.execute({ id: userId, updates });
 
             res.status(200).json(result);
         } catch (error) {

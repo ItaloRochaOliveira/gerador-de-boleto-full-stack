@@ -2,14 +2,23 @@ import UsersRepository from './repository/UsersRepository';
 import { Users } from '../db/typeorm/entity/Users';
 import { IHashManager } from '../interfaces/IHashManager';
 import NotFound from '../utils/errors/NotFound';
+import IServiceModel from '@/interfaces/IServiceModel';
 
-export default class EditUserService {
+export interface EditUserInput {
+    id: string;
+    updates: Partial<Users>;
+}
+
+export type OmitPassword = Omit<Users, 'password'>;
+
+export default class EditUserService implements IServiceModel<EditUserInput, OmitPassword> {
     constructor(
         private readonly usersRepository: UsersRepository,
         private readonly hashManager: IHashManager
     ) {}
 
-    async execute(id: string, updates: Partial<Users>): Promise<Omit<Users, 'password'> | null> {
+    async execute(data: EditUserInput) {
+        const { id, updates } = data;
         if (updates.password) {
             updates.password = await this.hashManager.hash(updates.password);
         }
@@ -29,6 +38,12 @@ export default class EditUserService {
 
         const { password: _, ...userWithoutPassword } = updatedUser;
 
-        return userWithoutPassword;
+        return {
+            status: 'success',
+            message: {
+                code: 200,
+                message: userWithoutPassword
+            }
+        };
     }
 }

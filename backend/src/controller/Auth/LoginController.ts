@@ -17,7 +17,7 @@ export default class LoginController {
             const hashManager = new HashManager();
 
             const loginService = new LoginUserService(usersRepository, hashManager, tokenManager);
-            const result = await loginService.execute(email, password);
+            const result = await loginService.execute({ email, password });
 
             res.status(200).json(result);
         } catch (error) {

@@ -36,7 +36,7 @@ export class BoletoData {
   deleted_at: string | null;
 
   @Column("varchar", { name: "user_id", nullable: false, length: 36 })
-  user_id: string;
+  userId: string;
 
 
     constructor(
@@ -51,7 +51,7 @@ export class BoletoData {
         updated_at: string | null,
         deleted: boolean,
         deleted_at: string | null,
-        user_id: string,
+        userId: string,
     ) {
         this.id = id
         this.nomeEmpresa = nome_empresa
@@ -64,6 +64,6 @@ export class BoletoData {
         this.updatedAt = updated_at
         this.deleted = deleted
         this.deleted_at = deleted_at
-        this.user_id = user_id
+        this.userId = userId
     }  
 }

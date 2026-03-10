@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { boletoAPI, Boleto } from '@/lib/api'
+import { boletoAPI, BoletoData, CreateBoletoData } from '@/lib/api'
 import { BoletoFormData } from '@/lib/validations'
 import { toast } from 'sonner'
 
 interface UseBoletosReturn {
-  boletos: Boleto[]
+  boletos: BoletoData[]
   isLoading: boolean
   isCreating: boolean
   fetchBoletos: () => Promise<void>
@@ -17,7 +17,7 @@ interface UseBoletosReturn {
 }
 
 export function useBoletos(): UseBoletosReturn {
-  const [boletos, setBoletos] = useState<Boleto[]>([])
+  const [boletos, setBoletos] = useState<BoletoData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
 
@@ -32,9 +32,13 @@ export function useBoletos(): UseBoletosReturn {
       const response = await boletoAPI.list()
       console.log('Response completa:', response)
       
-      // Backend retorna { boletos: [...] }, então extraímos o array
+      // Controller retorna { message: string, boletos: [...], total: number, page: number, limit: number }
       const boletosArray = response?.boletos || []
       console.log('Array de boletos:', boletosArray)
+      console.log('Tipo do array:', typeof boletosArray)
+      console.log('É array?', Array.isArray(boletosArray))
+      console.log('Length:', boletosArray?.length)
+      
       setBoletos(Array.isArray(boletosArray) ? boletosArray : [])
     } catch (error: any) {
       console.error('Erro ao buscar boletos:', error)
@@ -56,7 +60,7 @@ export function useBoletos(): UseBoletosReturn {
         descricaoReferencia: data.descricaoReferencia,
         valor: parseFloat(data.valor),
         vencimento: data.vencimento,
-      })
+      } as CreateBoletoData)
       toast.success('Documento criado com sucesso!')
       await fetchBoletos()
     } catch (error: any) {
@@ -162,6 +166,7 @@ export function useBoletos(): UseBoletosReturn {
         return
       }
 
+      console.log('previewPdf - ID do boleto:', id)
       const blob = await boletoAPI.generatePdf(id)
       
       if (!blob || blob.size === 0) {
