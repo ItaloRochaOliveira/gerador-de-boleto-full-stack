@@ -4,30 +4,37 @@ import { ITokeManager } from '../interfaces/ITokenManager';
 import { IHashManager } from '../interfaces/IHashManager';
 import BadRequest from '../utils/errors/BadRequest';
 import { Role } from '@/interfaces/IRequestToken';
+import IServiceModel from '@/interfaces/IServiceModel';
 
-export default class SignupUserService {
+export interface SignupUserInput {
+    name: string;
+    email: string;
+    password: string;
+}
+
+export default class SignupUserService implements IServiceModel<SignupUserInput, { token: string; user: Omit<Users, 'password'> }> {
     constructor(
         private readonly usersRepository: UsersRepository,
         private readonly tokenManager: ITokeManager,
         private readonly hashManager: IHashManager
     ) {}
 
-    async execute(name: string, email: string, password: string): Promise<{ token: string; user: Omit<Users, 'password'> }> {
+    async execute(data: SignupUserInput): Promise<{ status: string; message: { code: number; message: { token: string; user: Omit<Users, 'password'>; }; }; }> {
         // Check if user already exists
-        const existingUser = await this.usersRepository.getByEmail(email);
+        const existingUser = await this.usersRepository.getByEmail(data.email);
         
         if (existingUser && !existingUser.deleted) {
             throw new BadRequest('Usuário já existe');
         }
 
         // Hash password
-        const hashedPassword = await this.hashManager.hash(password);
+        const hashedPassword = await this.hashManager.hash(data.password);
 
         // Create new user
         const newUser: Partial<Users> = {
             id: Math.random().toString(36).substring(2, 15),
-            name,
-            email,
+            name: data.name,
+            email: data.email,
             password: hashedPassword,
             role: 'user',
             createdAt: new Date().toISOString(),
@@ -51,6 +58,12 @@ export default class SignupUserService {
         // Remove password from user object
         const { password: _, ...userWithoutPassword } = createdUser;
 
-        return { token, user: userWithoutPassword };
+        return { 
+            status: 'success', 
+            message: { 
+                code: 201, 
+                message: { token, user: userWithoutPassword } 
+            } 
+        };
     }
 }

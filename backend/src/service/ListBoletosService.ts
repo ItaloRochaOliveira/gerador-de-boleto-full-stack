@@ -1,21 +1,31 @@
 import { BoletoData } from "../db/typeorm/entity/BoletoData";
 import BoletoRepository from "./repository/BoletoRepository";
 import { ListBoletosInput } from "../controller/Boleto/schema/ListBoletosSchema";
+import IServiceModel from "@/interfaces/IServiceModel";
 
-export default class ListBoletosService {
+export default class ListBoletosService implements IServiceModel<ListBoletosInput, { boletos: BoletoData[], total: number }> {
     constructor(
         private boletoRepository: BoletoRepository
     ) {}
 
-    async execute(data: ListBoletosInput, userId: string): Promise<{ boletos: BoletoData[], total: number }> {
-        console.log('ListBoletosService - Buscando boletos para usuário:', userId);
+    async execute(data: ListBoletosInput): Promise<{ status: string; message: { code: number; message: { boletos: BoletoData[], total: number } } }> {
+        console.log('ListBoletosService - Buscando boletos para usuário:', data.id);
         
         // Busca apenas boletos do usuário (otimizado)
-        const userBoletos = await this.boletoRepository.getByUserId(userId);
+        const userBoletos = await this.boletoRepository.getByUserId(data.id!);
         
         if (!userBoletos || userBoletos.length === 0) {
             console.log('ListBoletosService - Nenhum boleto encontrado');
-            return { boletos: [], total: 0 };
+            return {
+                status: 'success',
+                message: {
+                    code: 200,
+                    message: {
+                        boletos: [],
+                        total: 0
+                    }
+                }
+            };
         }
 
         console.log('ListBoletosService - Boletos encontrados:', userBoletos.length);
@@ -46,8 +56,14 @@ export default class ListBoletosService {
         console.log('ListBoletosService - Retornando:', paginatedBoletos.length, 'de', filteredBoletos.length);
 
         return {
-            boletos: paginatedBoletos,
-            total: filteredBoletos.length
+            status: 'success',
+            message: {
+                code: 200,
+                message: {
+                    boletos: paginatedBoletos,
+                    total: filteredBoletos.length
+                }
+            }
         };
     }
 }

@@ -1,7 +1,6 @@
 import { BoletoData } from "../db/typeorm/entity/BoletoData";
 import BoletoRepository from "./repository/BoletoRepository";
 import { CreateBoletoInput } from "../controller/Boleto/schema/CreateBoletoSchema";
-import TypeORMBoletoDataRepository from "./repository/typeorm/typeormBoletoData";
 import BadRequest from "@/utils/errors/BadRequest";
 
 export default class CreateBoletoService {
