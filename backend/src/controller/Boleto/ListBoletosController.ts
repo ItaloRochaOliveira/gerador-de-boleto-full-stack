@@ -14,12 +14,12 @@ export default class ListBoletosController {
             const boletoRepository = new TypeORMBoletoDataRepository();
             const listBoletosService = new ListBoletosService(boletoRepository);
             
-            const result = await listBoletosService.execute(queryParams, userId);
+            const result = await listBoletosService.execute({ query: queryParams, userId });
 
             res.status(200).json({
-                message: result.boletos.length > 0 ? 'Boletos encontrados' : 'Nenhum boleto encontrado',
-                boletos: result.boletos,
-                total: result.total,
+                message: result.message.message.boletos.length > 0 ? 'Boletos encontrados' : 'Nenhum boleto encontrado',
+                boletos: result.message.message.boletos,    
+                total: result.message.message.total,
                 page: queryParams.page,
                 limit: queryParams.limit
             });

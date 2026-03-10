@@ -4,12 +4,17 @@ import { GetBoletoInput } from "../controller/Boleto/schema/GetBoletoSchema";
 import BadRequest from "@/utils/errors/BadRequest";
 import IServiceModel from "@/interfaces/IServiceModel";
 
-export default class GetBoletoService implements IServiceModel<GetBoletoInput, BoletoData> {
+export interface GetBoletoServiceInput {
+    id: GetBoletoInput['id'];
+    userId: string;
+}
+
+export default class GetBoletoService implements IServiceModel<GetBoletoServiceInput, BoletoData> {
     constructor(
         private boletoRepository: BoletoRepository
     ) {}
 
-    async execute(data: GetBoletoInput): Promise<{ status: string; message: { code: number; message: BoletoData; }; }> {
+    async execute(data: GetBoletoServiceInput): Promise<{ status: string; message: { code: number; message: BoletoData; }; }> {
         const boleto = await this.boletoRepository.getById(data.id);
         
         if (!boleto) {

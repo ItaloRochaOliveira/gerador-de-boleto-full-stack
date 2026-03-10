@@ -17,7 +17,7 @@ export default class GeneratePdfController {
             const boletoRepository = new TypeORMBoletoDataRepository();
             const getBoletoService = new GetBoletoService(boletoRepository);
             
-            const boleto = await getBoletoService.execute({ id }, userId);
+            const boleto = await getBoletoService.execute({ id, userId });
 
             // Converte para o formato esperado pelo PDF
             const pdfData = PdfGenerator.convertToPdfFormat(boleto);
@@ -37,15 +37,15 @@ export default class GeneratePdfController {
             const boletoRepository = new TypeORMBoletoDataRepository();
             const listBoletosService = new ListBoletosService(boletoRepository);
             
-            const result = await listBoletosService.execute(queryParams, userId);
+            const result = await listBoletosService.execute({ query: queryParams, userId });
 
-            if (result.boletos.length === 0) {
+            if (result.message.message.boletos.length === 0) {
                 res.status(404).json({ message: 'Nenhum boleto encontrado' });
-                return;
+                return; 
             }
 
             // Gera PDF com múltiplos boletos
-            await PdfGenerator.generateMultipleBoletosPdf(result.boletos, res);
+            await PdfGenerator.generateMultipleBoletosPdf(result.message.message.boletos, res);
         } catch (error) {
             next(error);
         }

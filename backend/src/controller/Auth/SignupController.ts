@@ -16,7 +16,7 @@ export default class SignupController {
             const hashManager = new HashManager();
 
             const signupService = new SignupUserService(usersRepository, tokenManager, hashManager);
-            const result = await signupService.execute(name, email, password);
+            const result = await signupService.execute({ name, email, password });
 
             res.status(201).json(result);
         } catch (error) {
