@@ -31,7 +31,7 @@ export class Users {
   @Column("varchar", { name: "deleted_at", nullable: true, length: 24 })
   deletedAt: string | null;
 
-  @OneToMany(() => BoletoData, (boleto) => boleto.user)
+  @OneToMany(() => BoletoData, (boleto) => boleto.userId)
   boletoData?: BoletoData[];
 
 

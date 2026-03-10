@@ -12,7 +12,7 @@ export interface LoginUserInput {
     password: string;
 }
 
-export default class LoginUserService implements IServiceModel<LoginUserInput, { token: string; user: Omit<Users, 'password'> }> {
+export default class LoginUserService implements IServiceModel<LoginUserInput, { token: string}> {
     constructor(
         private readonly usersRepository: UsersRepository,
         private readonly hashManager: IHashManager,

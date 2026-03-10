@@ -13,11 +13,15 @@ export default class GeneratePdfController {
         try {
             const userId = req.user!.id;
             const { id } = GetBoletoSchema.parse(req.params);
+            
+            console.log('GeneratePdfController - userId:', userId, 'boletoId:', id);
 
             const boletoRepository = new TypeORMBoletoDataRepository();
             const getBoletoService = new GetBoletoService(boletoRepository);
             
             const boleto = await getBoletoService.execute({ id, userId });
+            
+            console.log('GeneratePdfController - boleto encontrado:', boleto);
 
             // Converte para o formato esperado pelo PDF
             const pdfData = PdfGenerator.convertToPdfFormat(boleto);

@@ -21,7 +21,7 @@ export default class GetBoletoService implements IServiceModel<GetBoletoServiceI
             throw new BadRequest('Boleto não encontrado');
         }
 
-        if (boleto.user_id !== data.id) {
+        if (boleto.userId !== data.userId) {
             throw new BadRequest('Acesso negado ao boleto');
         }
 
