@@ -14,7 +14,7 @@ export default class GetBoletoController {
             const boletoRepository = new TypeORMBoletoDataRepository();
             const getBoletoService = new GetBoletoService(boletoRepository);
             
-            const boleto = await getBoletoService.execute({ id }, userId);
+            const boleto = await getBoletoService.execute({ id, userId });
 
             // Retorna os dados do boleto
             res.status(200).json(boleto);

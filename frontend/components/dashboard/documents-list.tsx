@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FileText, Download, Plus } from 'lucide-react'
 import { BoletoForm } from '../forms/boleto-form'
 
+import { BoletoData } from '@/lib/api'
+
 interface DocumentsListProps {
   onCreateNew: () => void
-  boletos: any[]
+  boletos: BoletoData[]
   isLoading: boolean
   previewPdf: (id: string) => void
 }
@@ -18,6 +20,8 @@ export function DocumentsList({
   isLoading,
   previewPdf 
 }: DocumentsListProps) {
+  console.log('DocumentsList render - boletos:', boletos, 'isLoading:', isLoading)
+  
   if (isLoading) {
     return (
       <Card>
@@ -64,20 +68,20 @@ export function DocumentsList({
       </CardHeader>
       <CardContent className="px-4 sm:px-6">
         <div className="space-y-3 sm:space-y-4">
-          {Array.isArray(boletos) && boletos.map((boleto: any) => (
+          {Array.isArray(boletos) && boletos.length > 0 ? boletos.map((boleto: BoletoData) => (
             <div
               key={boleto.id}
               className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-gray-50 gap-3 sm:gap-0"
             >
               <div className="flex-1 w-full sm:w-auto">
-                <h4 className="font-medium text-gray-900 text-sm sm:text-base mb-1">{boleto.nomeEmpresa}</h4>
-                <p className="text-sm text-gray-500 mb-1">{boleto.cpfCnpj}</p>
-                <p className="text-sm text-gray-500 mb-1 truncate">{boleto.endereco}</p>
+                <h4 className="font-medium text-gray-900 text-sm sm:text-base mb-1">{boleto.nomeEmpresa || 'Nome não informado'}</h4>
+                <p className="text-sm text-gray-500 mb-1">{boleto.cpfCnpj || 'CPF/CNPJ não informado'}</p>
+                <p className="text-sm text-gray-500 mb-1 truncate">{boleto.endereco || 'Endereço não informado'}</p>
                 {boleto.descricaoReferencia && (
                   <p className="text-sm text-gray-500 mb-2 line-clamp-2">{boleto.descricaoReferencia}</p>
                 )}
                 <p className="text-xs sm:text-sm text-gray-400">
-                  Valor: R$ {typeof boleto.valor === 'string' ? parseFloat(boleto.valor).toFixed(2) : boleto.valor.toFixed(2)} | Vencimento: {boleto.vencimento}
+                  Valor: R$ {boleto.valor ? (typeof boleto.valor === 'string' ? parseFloat(boleto.valor).toFixed(2) : boleto.valor.toFixed(2)) : '0.00'} | Vencimento: {boleto.vencimento ? (typeof boleto.vencimento === 'string' ? new Date(boleto.vencimento).toLocaleDateString() : boleto.vencimento.toLocaleDateString()) : 'N/A'}
                 </p>
               </div>
               <div className="flex items-center space-x-2 w-full sm:w-auto">
@@ -93,7 +97,11 @@ export function DocumentsList({
                 </Button>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Nenhum documento encontrado</p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

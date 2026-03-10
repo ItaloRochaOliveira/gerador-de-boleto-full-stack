@@ -7,7 +7,7 @@ export default class DeleteUserController {
 
     async handle(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { userId } = req.user!;
+            const userId = req.user!.id;
 
             const usersRepository = new TypeORMUsersRepository();
             const deleteService = new DeleteUserService(usersRepository);

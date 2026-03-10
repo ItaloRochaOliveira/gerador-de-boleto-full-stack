@@ -1,5 +1,3 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import UsersRepository from './repository/UsersRepository';
 import { Users } from '../db/typeorm/entity/Users';
 import NotFound from '@/utils/errors/NotFound';
@@ -7,24 +5,30 @@ import { ITokeManager } from '@/interfaces/ITokenManager';
 import { IHashManager } from '@/interfaces/IHashManager';
 import BadRequest from '@/utils/errors/BadRequest';
 import { Role } from '@/interfaces/IRequestToken';
+import IServiceModel from '@/interfaces/IServiceModel';
 
-export default class LoginUserService {
+export interface LoginUserInput {
+    email: string;
+    password: string;
+}
+
+export default class LoginUserService implements IServiceModel<LoginUserInput, { token: string}> {
     constructor(
         private readonly usersRepository: UsersRepository,
         private readonly hashManager: IHashManager,
         private readonly tokenManager: ITokeManager
     ) {}
 
-    async execute(email: string, password: string): Promise<{ token: string; user: Omit<Users, 'password'> } | null> {
+    async execute(data: LoginUserInput){
         // Find user by email
-        const user = await this.usersRepository.getByEmail(email);
+        const user = await this.usersRepository.getByEmail(data.email);
         
         if (!user || user.deleted) {
             throw new NotFound('Usuário não encontrado');
         }
 
         // Check password
-        const passwordMatch = await this.hashManager.compare(password, user.password || '');
+        const passwordMatch = await this.hashManager.compare(data.password, user.password || '');
         
         if (!passwordMatch) {
             throw new BadRequest("Senha Invalida");
@@ -40,6 +44,12 @@ export default class LoginUserService {
         // Remove password from user object
         const { password: _, ...userWithoutPassword } = user;
 
-        return { token, user: userWithoutPassword };
+        return { 
+            status: 'success', 
+            message: { 
+                code: 200, 
+                message: { token, user: userWithoutPassword } 
+            } 
+        };
     }
 }

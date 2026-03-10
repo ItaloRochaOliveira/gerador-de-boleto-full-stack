@@ -28,10 +28,32 @@ api.interceptors.response.use(
   }
 )
 
+export interface ApiResponse<T> {
+        status: string,
+        message: {
+            code: number,
+            message: T,
+        },
+    }
+
+export interface Users {
+  id: string
+  name: string | null
+  email: string
+  password: string | null
+  role: string | null
+  createdAt: string | null
+  updatedAt: string | null
+  deleted: boolean | null
+  deletedAt: string | null
+}
+
 export interface LoginData {
   email: string
   password: string
-}
+}   
+
+export interface LoginResponse extends ApiResponse<{ token: string}> {}
 
 export interface SignupData {
   name: string
@@ -40,6 +62,21 @@ export interface SignupData {
 }
 
 export interface BoletoData {
+  id: string
+  nomeEmpresa: string | null
+  cpfCnpj: string | null
+  endereco: string | null
+  descricaoReferencia: string | null
+  valor: number | null
+  vencimento: Date | null
+  createdAt: string | null
+  updatedAt: string | null
+  deleted: boolean
+  deleted_at: string | null
+  userId: string
+}
+
+export interface CreateBoletoData {
   nomeEmpresa: string
   cpfCnpj: string
   endereco: string
@@ -48,6 +85,13 @@ export interface BoletoData {
   vencimento: string
 }
 
+export interface BoletoListResponse {
+  message: string
+  boletos: BoletoData[]
+  total: number
+  page: number
+  limit: number
+}
 export interface Boleto {
   id: string
   nomeEmpresa: string
@@ -61,29 +105,29 @@ export interface Boleto {
 }
 
 export const authAPI = {
-  login: async (data: LoginData) => {
+  login: async (data: LoginData): Promise<LoginResponse> => {
     const response = await api.post('/auth/login', data)
     return response.data
   },
 
-  signup: async (data: SignupData) => {
+  signup: async (data: SignupData): Promise<LoginResponse> => {
     const response = await api.post('/auth/signup', data)
     return response.data
   },
 }
 
 export const boletoAPI = {
-  list: async (): Promise<{ boletos: Boleto[], total: number, page: number, limit: number }> => {
+  list: async (): Promise<BoletoListResponse> => {
     const response = await api.get('/boleto')
     return response.data
   },
 
-  get: async (id: string): Promise<Boleto> => {
+  get: async (id: string): Promise<ApiResponse<BoletoData>> => {
     const response = await api.get(`/boleto/${id}`)
     return response.data
   },
 
-  create: async (data: BoletoData): Promise<Boleto> => {
+  create: async (data: CreateBoletoData): Promise<ApiResponse<BoletoData>> => {
     const response = await api.post('/boleto/create', data)
     return response.data
   },

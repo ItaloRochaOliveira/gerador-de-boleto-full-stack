@@ -33,7 +33,7 @@ export function useAuth(): UseAuthReturn {
     try {
       setIsLoading(true)
       const response = await authAPI.login(data)
-      localStorage.setItem('token', response.token)
+      localStorage.setItem('token', response.message.message.token)
       setIsAuthenticated(true)
       toast.success('Login realizado com sucesso!')
       router.push('/')
@@ -50,7 +50,7 @@ export function useAuth(): UseAuthReturn {
     try {
       setIsLoading(true)
       const response = await authAPI.signup(data)
-      localStorage.setItem('token', response.token)
+      localStorage.setItem('token', response.message.message.token)
       setIsAuthenticated(true)
       toast.success('Conta criada com sucesso!')
       router.push('/')
