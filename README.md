@@ -170,19 +170,16 @@ docker build -t back_end_gerador_pdf:1.0.0 ./ && docker compose up -d && docker 
 
 #### Backend (.env)
 ```env
-# Database
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=seu_usuario
-POSTGRES_PASSWORD=sua_senha
-POSTGRES_DB=projeto_boletos
-
-# JWT
-JWT_SECRET=seu_secret_super_secreto
-
-# Server
-PORT=3006
+PORT=sua_porta
 ENV=dev
+DB_HOST=seu_banco
+POSTGRES_HOST=seu_host
+POSTGRES_PORT=sua_porta
+DB_PASS=sua_senha_do_banco
+POSTGRES_USER=seu_user
+POSTGRES_PASSWORD=sua_senha_do_user
+DB_DATABASE=seu_database
+POSTGRES_DB=seu_database
 ```
 
 #### Frontend (.env.local)
