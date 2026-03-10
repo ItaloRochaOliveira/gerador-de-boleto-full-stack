@@ -1,11 +1,8 @@
 import { UpdateResult } from "typeorm";
 import { Users } from "../../db/typeorm/entity/Users";
+import IRepository from "../../interfaces/IRepository";
 
-export default interface UsersRepository{
-    getAll(): Promise<Users[] | null>;
-    getById(id: string): Promise<Users | null>;
+export default interface UsersRepository extends IRepository<Users>{
     getByEmail(email: string): Promise<Users | null>;
-    create(user: Users): Promise<Users | null>;
-    edit(id: string, user: Users): Promise<UpdateResult>;
-    delete(id:string): Promise<UpdateResult>;
+    deletePatial(id: string): Promise<UpdateResult>;
 }
